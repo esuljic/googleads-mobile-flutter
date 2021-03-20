@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// @dart=2.9
-
 import 'dart:async';
 
 import 'package:google_mobile_ads/src/ad_instance_manager.dart';
@@ -451,7 +449,7 @@ void main() {
       await instanceManager.channel.binaryMessenger.handlePlatformMessage(
         'plugins.flutter.io/google_mobile_ads',
         data,
-        (ByteData data) {},
+        (ByteData? data) {},
       );
 
       expect(adEventCompleter.future, completion(banner));
@@ -465,7 +463,7 @@ void main() {
         adUnitId: BannerAd.testAdUnitId,
         size: AdSize.banner,
         listener: AdListener(
-            onAdFailedToLoad: (Ad ad, LoadAdError error) =>
+            onAdFailedToLoad: (Ad ad, LoadAdError? error) =>
                 resultsCompleter.complete(<dynamic>[ad, error])),
         request: AdRequest(),
       );
@@ -484,7 +482,7 @@ void main() {
       await instanceManager.channel.binaryMessenger.handlePlatformMessage(
         'plugins.flutter.io/google_mobile_ads',
         data,
-        (ByteData data) {},
+        (ByteData? data) {},
       );
 
       final List<dynamic> results = await resultsCompleter.future;
@@ -516,7 +514,7 @@ void main() {
       await instanceManager.channel.binaryMessenger.handlePlatformMessage(
         'plugins.flutter.io/google_mobile_ads',
         data,
-        (ByteData data) {},
+        (ByteData? data) {},
       );
 
       expect(adEventCompleter.future, completion(native));
@@ -544,7 +542,7 @@ void main() {
       await instanceManager.channel.binaryMessenger.handlePlatformMessage(
         'plugins.flutter.io/google_mobile_ads',
         data,
-        (ByteData data) {},
+        (ByteData? data) {},
       );
 
       expect(adEventCompleter.future, completion(native));
@@ -572,7 +570,7 @@ void main() {
       await instanceManager.channel.binaryMessenger.handlePlatformMessage(
         'plugins.flutter.io/google_mobile_ads',
         data,
-        (ByteData data) {},
+        (ByteData? data) {},
       );
 
       expect(adEventCompleter.future, completion(banner));
@@ -600,7 +598,7 @@ void main() {
       await instanceManager.channel.binaryMessenger.handlePlatformMessage(
         'plugins.flutter.io/google_mobile_ads',
         data,
-        (ByteData data) {},
+        (ByteData? data) {},
       );
 
       expect(adEventCompleter.future, completion(banner));
@@ -628,7 +626,7 @@ void main() {
       await instanceManager.channel.binaryMessenger.handlePlatformMessage(
         'plugins.flutter.io/google_mobile_ads',
         data,
-        (ByteData data) {},
+        (ByteData? data) {},
       );
 
       expect(adEventCompleter.future, completion(banner));
@@ -641,8 +639,9 @@ void main() {
       final RewardedAd rewardedAd = RewardedAd(
         adUnitId: BannerAd.testAdUnitId,
         listener: AdListener(
-          onRewardedAdUserEarnedReward: (RewardedAd ad, RewardItem item) =>
-              resultCompleter.complete(<Object>[ad, item]),
+          onRewardedAdUserEarnedReward: (RewardedAd ad, RewardItem? item) {
+            if (item != null) resultCompleter.complete(<Object>[ad, item]);
+          },
         ),
         request: AdRequest(),
       );
@@ -661,7 +660,7 @@ void main() {
       await instanceManager.channel.binaryMessenger.handlePlatformMessage(
         'plugins.flutter.io/google_mobile_ads',
         data,
-        (ByteData data) {},
+        (ByteData? data) {},
       );
 
       final List<dynamic> result = await resultCompleter.future;
@@ -698,7 +697,7 @@ void main() {
     });
 
     test('encode/decode AdSize', () async {
-      final ByteData byteData = codec.encodeMessage(AdSize.banner);
+      final ByteData? byteData = codec.encodeMessage(AdSize.banner);
       expect(codec.decodeMessage(byteData), AdSize.banner);
     });
 
@@ -709,12 +708,12 @@ void main() {
           testDevices: ['Android', 'iOS'],
           nonPersonalizedAds: false);
 
-      final ByteData byteData = codec.encodeMessage(adRequest);
+      final ByteData? byteData = codec.encodeMessage(adRequest);
       expect(codec.decodeMessage(byteData), adRequest);
     });
 
     test('encode/decode $LoadAdError', () async {
-      final ByteData byteData = codec.encodeMessage(
+      final ByteData? byteData = codec.encodeMessage(
         LoadAdError(1, 'domain', 'message'),
       );
       final LoadAdError error = codec.decodeMessage(byteData);
@@ -724,7 +723,7 @@ void main() {
     });
 
     test('encode/decode $RewardItem', () async {
-      final ByteData byteData = codec.encodeMessage(RewardItem(1, 'type'));
+      final ByteData? byteData = codec.encodeMessage(RewardItem(1, 'type'));
 
       final RewardItem result = codec.decodeMessage(byteData);
       expect(result.amount, 1);
@@ -732,7 +731,7 @@ void main() {
     });
 
     test('encode/decode $PublisherAdRequest', () async {
-      final ByteData byteData = codec.encodeMessage(PublisherAdRequest(
+      final ByteData? byteData = codec.encodeMessage(PublisherAdRequest(
         keywords: <String>['who'],
         contentUrl: 'dat',
         customTargeting: <String, String>{'boy': 'who'},
@@ -783,7 +782,7 @@ void main() {
       await instanceManager.channel.binaryMessenger.handlePlatformMessage(
         'plugins.flutter.io/google_mobile_ads',
         data,
-        (ByteData data) {},
+        (ByteData? data) {},
       );
 
       expect(banner.isLoaded(), completion(true));

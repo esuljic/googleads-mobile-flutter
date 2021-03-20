@@ -44,7 +44,7 @@ class MobileAds {
   ///
   /// If this method is not called, the first ad request automatically
   /// initializes the Google Mobile Ads SDK.
-  Future<InitializationStatus> initialize() {
+  Future<InitializationStatus?> initialize() {
     return instanceManager.channel.invokeMethod<InitializationStatus>(
       'MobileAds#initialize',
     );
@@ -79,13 +79,13 @@ class AdapterStatus {
   AdapterStatus(this.state, this.description, this.latency);
 
   /// The adapter's initialization state.
-  final AdapterInitializationState state;
+  final AdapterInitializationState? state;
 
   /// Detailed description of the status.
-  final String description;
+  final String? description;
 
   /// The adapter's initialization latency in seconds.
   ///
   /// 0 if initialization has not yet ended.
-  final double latency;
+  final double? latency;
 }

@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'dart:async';
+
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:google_mobile_ads/src/ad_instance_manager.dart';
 import 'package:flutter/foundation.dart';
@@ -53,16 +55,16 @@ void main() {
     });
 
     test('encode/decode $AdapterInitializationState', () {
-      final ByteData byteData =
+      final ByteData? byteData =
           codec.encodeMessage(AdapterInitializationState.ready);
 
-      final AdapterInitializationState result = codec.decodeMessage(byteData);
+      final AdapterInitializationState? result = codec.decodeMessage(byteData);
       expect(result, AdapterInitializationState.ready);
     });
 
     test('encode/decode $AdapterStatus', () {
       debugDefaultTargetPlatformOverride = TargetPlatform.android;
-      final ByteData byteData = codec.encodeMessage(AdapterStatus(
+      final ByteData? byteData = codec.encodeMessage(AdapterStatus(
         AdapterInitializationState.notReady,
         'describe',
         23,
@@ -96,7 +98,7 @@ void main() {
     });
 
     test('encode/decode $InitializationStatus', () {
-      final ByteData byteData =
+      final ByteData? byteData =
           codec.encodeMessage(InitializationStatus(<String, AdapterStatus>{
         'adMediation': AdapterStatus(
           AdapterInitializationState.ready,
@@ -107,20 +109,21 @@ void main() {
 
       final InitializationStatus result = codec.decodeMessage(byteData);
       expect(result.adapterStatuses, hasLength(1));
-      final AdapterStatus status = result.adapterStatuses['adMediation'];
+      final AdapterStatus status = result.adapterStatuses['adMediation']!;
       expect(status.state, AdapterInitializationState.ready);
       expect(status.description, 'aDescription');
       expect(status.latency, null);
     });
 
     test('$MobileAds.initialize', () async {
-      final InitializationStatus result = await MobileAds.instance.initialize();
+      final InitializationStatus result = await (MobileAds.instance.initialize()
+          as FutureOr<InitializationStatus>);
 
       expect(log,
           <Matcher>[isMethodCall("MobileAds#initialize", arguments: null)]);
 
       expect(result.adapterStatuses, hasLength(1));
-      final AdapterStatus status = result.adapterStatuses['aName'];
+      final AdapterStatus status = result.adapterStatuses['aName']!;
       expect(status.state, AdapterInitializationState.notReady);
       expect(status.description, 'desc');
       expect(status.latency, null);
