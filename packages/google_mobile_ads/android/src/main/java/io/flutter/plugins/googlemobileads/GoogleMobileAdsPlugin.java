@@ -18,6 +18,7 @@ import android.app.Activity;
 import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.RequestConfiguration;
 import com.google.android.gms.ads.formats.UnifiedNativeAd;
@@ -57,6 +58,20 @@ public class GoogleMobileAdsPlugin implements FlutterPlugin, ActivityAware, Meth
   @Nullable private FlutterPluginBinding pluginBinding;
   @Nullable private AdInstanceManager instanceManager;
   private final Map<String, NativeAdFactory> nativeAdFactories = new HashMap<>();
+
+  /**
+   * Public constructor for the plugin. Dependency initialization is handled in lifecycle methods
+   * below.
+   */
+  public GoogleMobileAdsPlugin() {}
+
+  /** Constructor for testing. */
+  @VisibleForTesting
+  protected GoogleMobileAdsPlugin(
+      @Nullable FlutterPluginBinding pluginBinding, @Nullable AdInstanceManager instanceManager) {
+    this.pluginBinding = pluginBinding;
+    this.instanceManager = instanceManager;
+  }
 
   /**
    * Interface used to display a {@link com.google.android.gms.ads.formats.UnifiedNativeAd}.
@@ -202,6 +217,12 @@ public class GoogleMobileAdsPlugin implements FlutterPlugin, ActivityAware, Meth
   @Override
   public void onMethodCall(@NonNull MethodCall call, @NonNull final Result result) {
     switch (call.method) {
+      case "_init":
+        // Internal init. This is necessary to cleanup state on hot restart.
+        instanceManager.disposeAllAds();
+        result.success(null);
+        break;
+
       case "MobileAds#initialize":
         MobileAds.initialize(
             instanceManager.activity,
@@ -282,13 +303,24 @@ public class GoogleMobileAdsPlugin implements FlutterPlugin, ActivityAware, Meth
         final String adUnitId = requireNonNull(call.<String>argument("adUnitId"));
         final FlutterAdRequest request = call.argument("request");
         final FlutterPublisherAdRequest publisherRequest = call.argument("publisherRequest");
+        final FlutterServerSideVerificationOptions serverSideVerificationOptions =
+            call.argument("serverSideVerificationOptions");
 
         final FlutterRewardedAd rewardedAd;
         if (request != null) {
-          rewardedAd = new FlutterRewardedAd(requireNonNull(instanceManager), adUnitId, request);
+          rewardedAd =
+              new FlutterRewardedAd(
+                  requireNonNull(instanceManager),
+                  adUnitId,
+                  request,
+                  serverSideVerificationOptions);
         } else if (publisherRequest != null) {
           rewardedAd =
-              new FlutterRewardedAd(requireNonNull(instanceManager), adUnitId, publisherRequest);
+              new FlutterRewardedAd(
+                  requireNonNull(instanceManager),
+                  adUnitId,
+                  publisherRequest,
+                  serverSideVerificationOptions);
         } else {
           result.error("InvalidRequest", "A null or invalid ad request was provided.", null);
           break;

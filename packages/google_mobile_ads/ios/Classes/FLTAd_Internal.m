@@ -309,16 +309,20 @@
   GADRewardedAd *_rewardedView;
   FLTAdRequest *_adRequest;
   UIViewController *_rootViewController;
+  FLTServerSideVerificationOptions *_serverSideVerificationOptions;
 }
 
 - (instancetype)initWithAdUnitId:(NSString *_Nonnull)adUnitId
-                         request:(FLTAdRequest *_Nonnull)request
-              rootViewController:(UIViewController *_Nonnull)rootViewController {
+                          request:(FLTAdRequest *_Nonnull)request
+               rootViewController:(UIViewController *_Nonnull)rootViewController
+    serverSideVerificationOptions:
+        (FLTServerSideVerificationOptions *_Nullable)serverSideVerificationOptions {
   self = [super init];
   if (self) {
     _adRequest = request;
     _rewardedView = [[GADRewardedAd alloc] initWithAdUnitID:adUnitId];
     _rootViewController = rootViewController;
+    _serverSideVerificationOptions = serverSideVerificationOptions;
   }
   return self;
 }
@@ -337,6 +341,11 @@
   } else {
     NSLog(@"A null or invalid ad request was provided.");
     return;
+  }
+  if (_serverSideVerificationOptions != NULL &&
+      ![_serverSideVerificationOptions isEqual:[NSNull null]]) {
+    _rewardedView.serverSideVerificationOptions =
+        [_serverSideVerificationOptions asGADServerSideVerificationOptions];
   }
 
   [self.rewardedAd loadRequest:request
@@ -420,7 +429,10 @@
 }
 
 - (void)adLoader:(GADAdLoader *)adLoader didReceiveUnifiedNativeAd:(GADUnifiedNativeAd *)nativeAd {
-  _view = [_nativeAdFactory createNativeAd:nativeAd customOptions:_customOptions];
+  // Use Nil instead of Null to fix crash with Swift integrations.
+  NSDictionary<NSString *, id> *customOptions =
+      [[NSNull null] isEqual:_customOptions] ? nil : _customOptions;
+  _view = [_nativeAdFactory createNativeAd:nativeAd customOptions:customOptions];
   nativeAd.delegate = self;
   [_manager onAdLoaded:self];
 }
