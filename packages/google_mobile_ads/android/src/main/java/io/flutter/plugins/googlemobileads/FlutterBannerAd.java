@@ -22,6 +22,15 @@ import com.google.android.gms.ads.ResponseInfo;
 import io.flutter.plugin.platform.PlatformView;
 import io.flutter.util.Preconditions;
 
+import android.content.res.Configuration;
+import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.view.Display;
+import android.widget.FrameLayout;
+
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+
 /** A wrapper for {@link AdView}. */
 class FlutterBannerAd extends FlutterAd implements PlatformView, FlutterDestroyableAd {
   @NonNull private final AdInstanceManager manager;
