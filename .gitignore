@@ -23,6 +23,7 @@ Pods/
 **/Flutter/flutter_assets/
 ServiceDefinitions.json
 xcuserdata/
+xcshareddata/
 
 local.properties
 keystore.properties
@@ -59,6 +60,7 @@ website/build
 # Generated files
 .docusaurus
 .cache-loader
+packages/google_mobile_ads/coverage/
 
 # Misc
 .env.local

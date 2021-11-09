@@ -1,3 +1,100 @@
+## 0.14.0
+
+* Fix for Android 12 issue [#330](https://github.com/googleads/googleads-mobile-flutter/issues/330)
+  * This will break compilation on android if you do not already set `compileSdkVersion` to `31`, or override the WorkManager dependency to < 2.7.0:
+      ```
+      dependencies {
+          implementation('androidx.work:work-runtime') {
+              version {
+                  strictly '2.6.0'
+              }
+          }
+      }
+      ```
+    
+## 0.13.6
+
+* Partial fix for [#265](https://github.com/googleads/googleads-mobile-flutter/issues/265).
+  * The partial fix allows you to load ads from a cached flutter engine in the add to app scenario,
+    but it only works the first time the engine is attached to an activity.
+  * Support for reusing the engine in another activity after the first one is destroyed is blocked 
+    by this Flutter issue which affects all platform views: https://github.com/flutter/flutter/issues/88880.
+* Adds support for getRequestConfiguration API
+  * [Android API reference](https://developers.google.com/android/reference/com/google/android/gms/ads/MobileAds#public-static-requestconfiguration-getrequestconfiguration)
+  * [iOS API reference](https://developers.google.com/admob/ios/api/reference/Classes/GADMobileAds#requestconfiguration)
+* Adds support for Fluid Ad Size (Ad Manager only)
+  * Fluid ads dynamically adjust their height based on their width. To help display them we've added a new
+    ad container, `FluidAdManagerBannerAd`, and a new widget `FluidAdWidget`.
+  * You can see the [fluid_example.dart](https://github.com/googleads/googleads-mobile-flutter/blob/master/packages/google_mobile_ads/example/lib/fluid_example.dart) for a reference of how to load and display a fluid ad.
+  * [Android API reference](https://developers.google.com/ad-manager/mobile-ads-sdk/android/native/styles#fluid_size)
+  * [iOS API reference](https://developers.google.com/ad-manager/mobile-ads-sdk/ios/native/native-styles#fluid_size)
+* Adds `AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize()` to support getting an `AnchoredAdaptiveBannerAdSize` in the current orientation.
+  * Previously the user had to specify an orientation (portrait / landscape) to create an AnchoredAdaptiveBannerAdSize. It has been made optional with this version. SDK will determine the current orientation of the device and return an appropriate AdSize.
+  * More information on anchored adaptive banners can be found here:
+    * [Admob android](https://developers.google.com/admob/android/banner/anchored-adaptive)
+    * [Admob iOS](https://developers.google.com/admob/ios/banner/anchored-adaptive)
+    * [Ad manager android](https://developers.google.com/ad-manager/mobile-ads-sdk/android/banner/anchored-adaptive)
+    * [Ad manager iOS](https://developers.google.com/ad-manager/mobile-ads-sdk/ios/banner/anchored-adaptive)
+* Adds support for inline adaptive banner ads.
+  * Inline adaptive banner ads are meant to be used in scrollable content. They are of variable height and can be as tall as the device screen.
+    They differ from Fluid ads in that they only resize once when the ad is loaded.
+    You can see the [inline_adaptive_example.dart](https://github.com/googleads/googleads-mobile-flutter/blob/master/packages/google_mobile_ads/example/lib/inline_adaptive_example.dart) for a reference of how to load and display 
+    inline adaptive banners.
+  * More information on inline adaptive banners can be found here:
+    * [Admob android](https://developers.google.com/admob/android/banner/inline-adaptive)
+    * [Admob iOS](https://developers.google.com/admob/ios/banner/inline-adaptive)
+    * [Ad manager android](https://developers.google.com/ad-manager/mobile-ads-sdk/android/banner/inline-adaptive)
+    * [Ad manager iOS](https://developers.google.com/ad-manager/mobile-ads-sdk/ios/banner/inline-adaptive)
+* Fix for [#369](https://github.com/googleads/googleads-mobile-flutter/issues/369)
+  * Fixes setting the app volume in android (doesn't affect iOS).
+* Adds support for setting location in `AdRequest` and `AdManagerAdRequest`.
+  * Both `AdRequest` and `AdManagerAdRequest` have a new param, `location`.
+  * Location data is not used to target Google Ads, but may be used by 3rd party ad networks.
+  * See other packages for getting the location. For example, https://pub.dev/packages/location.
+* Adds `publisherProvidedId` to `AdManagerAdRequest` to support [publisher provided ids](https://support.google.com/admanager/answer/2880055).
+
+## 0.13.5
+
+* Adds support for app open. 
+  * Implementation guidance can be found [here](https://developers.google.com/admob/flutter/app-open).
+  * As a reference please also see the [example app](https://github.com/googleads/googleads-mobile-flutter/tree/master/packages/app_open_example).
+  * Best practices can be found [here](https://support.google.com/admob/answer/9341964?hl=en).
+
+## 0.13.4
+
+* Adds support for muting and setting the volume level of the app.
+* Visit the following links for more information:
+  * https://developers.google.com/admob/android/global-settings#video_ad_volume_control
+  * https://developers.google.com/android/reference/com/google/android/gms/ads/MobileAds#public-static-void-setappvolume-float-volume
+* Adds support for setting immersive mode for Rewarded and Interstitial Ads in Android.
+* Visit the following links for more information:
+  * https://developers.google.com/android/reference/com/google/android/gms/ads/interstitial/InterstitialAd?hl=en#setImmersiveMode(boolean)
+  * https://developers.google.com/android/reference/com/google/android/gms/ads/rewarded/RewardedAd#setImmersiveMode(boolean)
+* Adds support for disableSDKCrashReporting in iOS; disableMediationInitialization and getVersionString in both the platforms.
+  * https://developers.google.com/admob/ios/api/reference/Classes/GADMobileAds#-disablesdkcrashreporting
+  * iOS (disableMediationInitialization): https://developers.google.com/admob/ios/api/reference/Classes/GADMobileAds#-disablemediationinitialization
+  * Android (disableMediationAdapterInitialization): https://developers.google.com/android/reference/com/google/android/gms/ads/MobileAds#public-static-void-disablemediationadapterinitialization-context-context
+  * https://developers.google.com/android/reference/com/google/android/gms/ads/MobileAds#getVersionString()
+
+## 0.13.3
+
+* Adds support for NativeAdOptions. More documentation also available for [Android](https://developers.google.com/admob/android/native/options) and [iOS](https://developers.google.com/admob/ios/native/options)
+
+## 0.13.2+1
+
+* Fixes [Issue #130](https://github.com/googleads/googleads-mobile-flutter/issues/130)
+
+## 0.13.2
+
+* Fixes a crash where [PlatformView.getView() returns null](https://github.com/googleads/googleads-mobile-flutter/issues/46)
+* Fixes memory leaks on Android.
+* Fixes a [crash on iOS](https://github.com/googleads/googleads-mobile-flutter/issues/138).
+* Marks smart banner sizes as deprecated. Instead you should use adaptive banners.
+
+## 0.13.1
+
+* Adds support for the paid event callback.
+
 ## 0.13.0
 
 * Updates GMA Android and iOS dependencies to 20.1.0 and 8.5.0, respectively.
