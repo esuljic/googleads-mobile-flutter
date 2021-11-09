@@ -66,7 +66,7 @@ class FlutterBannerAd extends FlutterAd implements FlutterAdLoadedListener {
     }
   }
 
-  private AdSize getAdSize() {
+  private AdSize getFullAdSize() {
     // Step 2 - Determine the screen width (less decorations) to use for the ad width.
     Display display = manager.activity.getWindowManager().getDefaultDisplay();
     DisplayMetrics outMetrics = new DisplayMetrics();
@@ -86,7 +86,7 @@ class FlutterBannerAd extends FlutterAd implements FlutterAdLoadedListener {
     adView = bannerAdCreator.createAdView();
     adView.setAdUnitId(adUnitId);
     //adView.setAdSize(size.getAdSize());
-    adView.setAdSize(getAdSize());
+    adView.setAdSize(getFullAdSize());
     adView.setOnPaidEventListener(new FlutterPaidEventListener(manager, this));
     adView.setAdListener(new FlutterBannerAdListener(adId, manager, this));
     adView.loadAd(request.asAdRequest());
